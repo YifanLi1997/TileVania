@@ -7,15 +7,18 @@ public class Player : MonoBehaviour
 {
     // Config
     [SerializeField] float runSpeed = 5f;
+    [SerializeField] float climbSpeed = 5f;
     [SerializeField] float jumpForce = 10f;
 
     // State
     bool isAlive = true;
+    float myGravity;
 
     // Cached component references 
     Rigidbody2D rb;
     SpriteRenderer spriteRenderer;
     Animator animator;
+    Collider2D col;
 
     // Start is called before the first frame update
     void Start()
@@ -23,13 +26,17 @@ public class Player : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
+        col = GetComponent<Collider2D>();
+
+        myGravity = rb.gravityScale;
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         Run();
         Jump();
+        ClimbLadder();
     }
 
     private void Run()
@@ -39,6 +46,7 @@ public class Player : MonoBehaviour
 
         bool isRunning = Mathf.Abs(inputDirection) > Mathf.Epsilon;
 
+        // flip the sprite
         if (isRunning)
         {
             transform.localScale = new Vector2(Mathf.Sign(rb.velocity.x), 1f);
@@ -49,10 +57,30 @@ public class Player : MonoBehaviour
 
     private void Jump()
     {
+        if (!col.IsTouchingLayers(LayerMask.GetMask("Jump Ground"))) { return; }
+
         if (CrossPlatformInputManager.GetButtonDown("Jump"))
         {
+            // Debug.Log("Jump pressed!");
             Vector2 jumpVelocityToAdd = new Vector2(0f, jumpForce);
             rb.velocity += jumpVelocityToAdd;
         }
+    }
+
+    private void ClimbLadder()
+    {
+        if (!col.IsTouchingLayers(LayerMask.GetMask("Ladder")))
+        {
+            animator.SetBool("Climbing", false);
+            rb.gravityScale = myGravity;
+            return;
+        }
+
+        float climbDirection = CrossPlatformInputManager.GetAxis("Vertical");
+        rb.gravityScale = 0;
+        rb.velocity = new Vector2(rb.velocity.x, climbDirection * climbSpeed);
+
+        bool isClimbing = Mathf.Abs(climbDirection) > Mathf.Epsilon;
+        animator.SetBool("Climbing", isClimbing);
     }
 }
