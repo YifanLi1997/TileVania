@@ -77,7 +77,7 @@ public class Player : MonoBehaviour
         }
 
         float climbDirection = CrossPlatformInputManager.GetAxis("Vertical");
-        rb.gravityScale = 0;
+        rb.gravityScale = 0f;
         rb.velocity = new Vector2(rb.velocity.x, climbDirection * climbSpeed);
 
         bool isClimbing = Mathf.Abs(climbDirection) > Mathf.Epsilon;
