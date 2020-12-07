@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
     [SerializeField] float runSpeed = 5f;
     [SerializeField] float climbSpeed = 5f;
     [SerializeField] float jumpForce = 10f;
+    [SerializeField] Collider2D footCol;
 
     // State
     bool isAlive = true;
@@ -57,7 +58,7 @@ public class Player : MonoBehaviour
 
     private void Jump()
     {
-        if (!col.IsTouchingLayers(LayerMask.GetMask("Jump Ground"))) { return; }
+        if (!footCol.IsTouchingLayers(LayerMask.GetMask("Jump Ground"))) { return; }
 
         if (CrossPlatformInputManager.GetButtonDown("Jump"))
         {
@@ -69,7 +70,7 @@ public class Player : MonoBehaviour
 
     private void ClimbLadder()
     {
-        if (!col.IsTouchingLayers(LayerMask.GetMask("Ladder")))
+        if (!footCol.IsTouchingLayers(LayerMask.GetMask("Ladder")))
         {
             animator.SetBool("Climbing", false);
             rb.gravityScale = myGravity;
