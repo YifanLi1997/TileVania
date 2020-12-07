@@ -10,6 +10,7 @@ public class Player : MonoBehaviour
     [SerializeField] float climbSpeed = 5f;
     [SerializeField] float jumpForce = 10f;
     [SerializeField] Collider2D footCol;
+    [SerializeField] Vector2 deathKick = new Vector2(200f, 200f);
 
     // State
     bool isAlive = true;
@@ -35,9 +36,27 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        Run();
-        Jump();
-        ClimbLadder();
+        if (isAlive)
+        {
+            Run();
+            Jump();
+            ClimbLadder();
+        }
+        else
+        {
+            rb.gravityScale = myGravity;
+        }
+        
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            isAlive = false;
+            animator.SetTrigger("Dying");
+            rb.velocity = deathKick;
+        }
     }
 
     private void Run()
