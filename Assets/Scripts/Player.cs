@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
@@ -41,12 +42,22 @@ public class Player : MonoBehaviour
             Run();
             Jump();
             ClimbLadder();
+            CheckSpike();
         }
         else
         {
             rb.gravityScale = myGravity;
         }
         
+    }
+
+    private void CheckSpike()
+    {
+        if (rb.IsTouchingLayers(LayerMask.GetMask("Spike")))
+        {
+            isAlive = false;
+            animator.SetTrigger("Dying");
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
